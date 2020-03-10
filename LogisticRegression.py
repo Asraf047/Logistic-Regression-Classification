@@ -10,22 +10,22 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix, accuracy_score, jaccard_score, log_loss, f1_score
 
-# Importing the dataset
-dataset = pd.read_csv('dataset.csv')
+# Importing the dataframe
+dataframe = pd.read_csv('dataframe.csv')
 
 # Impute missing values
 for column in ['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed', 'Loan_Amount_Term', 'Credit_History', 'Property_Area']:
-    dataset[column].fillna(dataset[column].mode()[0], inplace=True)
+    dataframe[column].fillna(dataframe[column].mode()[0], inplace=True)
 
 for column in ['LoanAmount', 'ApplicantIncome', 'CoapplicantIncome']:
-    dataset[column].fillna(dataset[column].mean(), inplace=True)
+    dataframe[column].fillna(dataframe[column].mean(), inplace=True)
     
 # =============================================================================
-# dataset['Gender'].fillna(dataset['Gender'].mode()[0],inplace=True)
+# dataframe['Gender'].fillna(dataframe['Gender'].mode()[0],inplace=True)
 # =============================================================================
 
 # =============================================================================
-# dataset.fillna(value = {'Gender': dataset['Gender'].mode()[0],
+# dataframe.fillna(value = {'Gender': dataframe['Gender'].mode()[0],
 #                         'Married': 'NO'
 #                         },inplace = True)
 # =============================================================================
@@ -34,12 +34,12 @@ for column in ['LoanAmount', 'ApplicantIncome', 'CoapplicantIncome']:
 cat=['Gender','Married','Dependents','Education','Self_Employed','Credit_History','Property_Area']
 for var in cat:
     le = preprocessing.LabelEncoder()
-    dataset[var]=le.fit_transform(dataset[var].astype('str'))
-dataset.dtypes
+    dataframe[var]=le.fit_transform(dataframe[var].astype('str'))
+dataframe.dtypes
 
-# Splitting the dataset into the Training set and Test set
-X = dataset.iloc[:, 1:11].values
-y = dataset.iloc[:, 12].values
+# Splitting the dataframe into the Training set and Test set
+X = dataframe.iloc[:, 1:11].values
+y = dataframe.iloc[:, 12].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 0)
 
 # Feature Scaling
@@ -58,6 +58,22 @@ y_pred = classifier.predict(X_test)
 # Making the Confusion Matrix
 cm = confusion_matrix(y_test, y_pred)
 print(cm)
+
+# Plot confusion matrix
+from sklearn.metrics import plot_confusion_matrix
+title='yes no'
+class_names=['Y','N']
+titles_options = [("Confusion matrix, without normalization", None),
+                  ("Normalized confusion matrix", 'true')]
+for title, normalize in titles_options:
+    disp = plot_confusion_matrix(classifier, X_test, y_test,
+                                 display_labels=class_names,
+                                 cmap=plt.cm.Blues,
+                                 normalize=normalize)
+    disp.ax_.set_title(title)
+    print(title)
+    print(disp.confusion_matrix)
+plt.show()
 
 # Results
 le = preprocessing.LabelEncoder()
